@@ -1,0 +1,20 @@
+-- Day 5 Set 2: Bank Branch Accounts
+CREATE DATABASE IF NOT EXISTS bank_branch; USE bank_branch;
+CREATE TABLE IF NOT EXISTS customers(customer_id INT PRIMARY KEY,customer_name VARCHAR(100) NOT NULL,address_line VARCHAR(200) NOT NULL);
+CREATE TABLE IF NOT EXISTS branches(branch_id INT PRIMARY KEY,branch_name VARCHAR(100) NOT NULL UNIQUE,branch_code VARCHAR(12) NOT NULL UNIQUE);
+CREATE TABLE IF NOT EXISTS account_types(account_type_id INT PRIMARY KEY,type_name VARCHAR(30) NOT NULL UNIQUE CHECK(type_name IN ('SAVINGS','CURRENT','SALARY','FIXED_DEPOSIT')));
+CREATE TABLE IF NOT EXISTS relationship_managers(manager_id INT PRIMARY KEY,manager_name VARCHAR(100) NOT NULL,email VARCHAR(120) NOT NULL UNIQUE);
+CREATE TABLE IF NOT EXISTS accounts(account_id INT PRIMARY KEY AUTO_INCREMENT,account_number VARCHAR(20) NOT NULL UNIQUE,customer_id INT NOT NULL,account_type_id INT NOT NULL,branch_id INT NOT NULL,manager_id INT NOT NULL,opened_on DATE NOT NULL,balance DECIMAL(15,2) NOT NULL DEFAULT 0 CHECK(balance>=0),FOREIGN KEY(customer_id) REFERENCES customers(customer_id),FOREIGN KEY(account_type_id) REFERENCES account_types(account_type_id),FOREIGN KEY(branch_id) REFERENCES branches(branch_id),FOREIGN KEY(manager_id) REFERENCES relationship_managers(manager_id));
+INSERT IGNORE INTO customers VALUES (1,'Arun Kumar','Chennai'),(2,'Bala Raj','Madurai'),(3,'Charan S','Coimbatore'),(4,'Divya M','Chennai'),(5,'Ezhil K','Salem'),(6,'Farah A','Trichy'),(7,'Gokul P','Chennai'),(8,'Hari V','Vellore'),(9,'Isha R','Erode'),(10,'Jeeva T','Chennai');
+INSERT IGNORE INTO branches VALUES (1,'Chennai Main','CHN001'),(2,'Madurai Main','MDU001'),(3,'Coimbatore Main','CBE001'),(4,'Salem Main','SLM001'),(5,'Trichy Main','TRY001'),(6,'Velachery','CHN002'),(7,'Tambaram','CHN003'),(8,'Vellore','VLR001'),(9,'Erode','ERD001'),(10,'OMR','CHN004');
+INSERT IGNORE INTO account_types VALUES (1,'SAVINGS'),(2,'CURRENT'),(3,'SALARY'),(4,'FIXED_DEPOSIT');
+INSERT IGNORE INTO relationship_managers VALUES (1,'Manager One','m1@bank.example'),(2,'Manager Two','m2@bank.example'),(3,'Manager Three','m3@bank.example'),(4,'Manager Four','m4@bank.example'),(5,'Manager Five','m5@bank.example'),(6,'Manager Six','m6@bank.example'),(7,'Manager Seven','m7@bank.example'),(8,'Manager Eight','m8@bank.example'),(9,'Manager Nine','m9@bank.example'),(10,'Manager Ten','m10@bank.example');
+INSERT IGNORE INTO accounts(account_number,customer_id,account_type_id,branch_id,manager_id,opened_on,balance) VALUES ('000000000001',1,1,1,1,'2026-10-01',25000),('000000000002',2,2,2,2,'2026-10-02',15000),('000000000003',3,3,3,3,'2026-10-03',32000),('000000000004',4,1,6,4,'2026-10-04',45000),('000000000005',5,4,4,5,'2026-10-05',50000),('000000000006',6,1,5,6,'2026-10-06',12000),('000000000007',7,3,7,7,'2026-10-07',27000),('000000000008',8,2,8,8,'2026-10-08',35000),('000000000009',9,1,9,9,'2026-10-09',22000),('000000000010',10,4,10,10,'2026-10-10',80000);
+SELECT a.account_number,c.customer_name,b.branch_name,t.type_name,a.opened_on,a.balance FROM accounts a JOIN customers c ON a.customer_id=c.customer_id JOIN branches b ON a.branch_id=b.branch_id JOIN account_types t ON a.account_type_id=t.account_type_id WHERE a.opened_on BETWEEN '2026-10-01' AND '2026-12-31' AND a.balance>20000 AND (t.type_name IN ('SAVINGS','SALARY') OR c.customer_name LIKE 'A%');
+ALTER TABLE accounts ADD COLUMN kyc_status ENUM('PENDING','VERIFIED','REJECTED') NOT NULL DEFAULT 'PENDING';
+RENAME TABLE relationship_managers TO account_managers;
+SELECT CONSTRAINT_NAME,CONSTRAINT_TYPE FROM information_schema.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA='bank_branch' AND TABLE_NAME='accounts';
+-- Inspect the CHECK name above, then optionally: ALTER TABLE accounts DROP CHECK accounts_chk_1;
+CREATE TABLE ddl_test(id INT PRIMARY KEY AUTO_INCREMENT,note VARCHAR(40)); INSERT INTO ddl_test(note) VALUES('one'),('two');
+DELETE FROM ddl_test WHERE id=1; INSERT INTO ddl_test(note) VALUES('after delete'); SELECT * FROM ddl_test;
+TRUNCATE TABLE ddl_test; INSERT INTO ddl_test(note) VALUES('after truncate'); SELECT * FROM ddl_test; DROP TABLE ddl_test;
