@@ -1,0 +1,8 @@
+CREATE DATABASE IF NOT EXISTS day9_insurance; USE day9_insurance;
+CREATE TABLE customers(customer_id INT PRIMARY KEY AUTO_INCREMENT,customer_name VARCHAR(120) NOT NULL,email VARCHAR(150)) ENGINE=InnoDB;
+CREATE TABLE policies(policy_id INT PRIMARY KEY AUTO_INCREMENT,customer_id INT NOT NULL,policy_type VARCHAR(50) NOT NULL,premium DECIMAL(10,2) NOT NULL,renewal_date DATE NOT NULL,status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',no_claim_years INT NOT NULL DEFAULT 0,FOREIGN KEY(customer_id) REFERENCES customers(customer_id)) ENGINE=InnoDB;
+CREATE TABLE claims(claim_id INT PRIMARY KEY AUTO_INCREMENT,policy_id INT NOT NULL,claim_status VARCHAR(20) NOT NULL,FOREIGN KEY(policy_id) REFERENCES policies(policy_id)) ENGINE=InnoDB;
+CREATE TABLE policy_audit(audit_id BIGINT PRIMARY KEY AUTO_INCREMENT,policy_id INT NOT NULL,action_name VARCHAR(50) NOT NULL,old_premium DECIMAL(10,2),new_premium DECIMAL(10,2),action_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB;
+CREATE TABLE policy_lapse_log(log_id BIGINT PRIMARY KEY AUTO_INCREMENT,policy_id INT NOT NULL,logged_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,message VARCHAR(200)) ENGINE=InnoDB;
+INSERT INTO customers(customer_name,email) VALUES('Ravi','ravi@example.com'),('Meena','meena@example.com');
+INSERT INTO policies(customer_id,policy_type,premium,renewal_date,status,no_claim_years) VALUES(1,'HEALTH',12000,CURDATE()+INTERVAL 30 DAY,'ACTIVE',3),(2,'MOTOR',9000,CURDATE()-INTERVAL 10 DAY,'ACTIVE',0);

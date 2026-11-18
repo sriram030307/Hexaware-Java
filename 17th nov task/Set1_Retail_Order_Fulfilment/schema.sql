@@ -1,0 +1,6 @@
+CREATE DATABASE IF NOT EXISTS day9_retail; USE day9_retail;
+CREATE TABLE products(product_id INT PRIMARY KEY AUTO_INCREMENT,product_name VARCHAR(100) NOT NULL,selling_price DECIMAL(10,2) NOT NULL,cost_price DECIMAL(10,2) NOT NULL,supplier_name VARCHAR(100),stock_qty INT NOT NULL DEFAULT 0,CHECK(selling_price>=0 AND cost_price>=0 AND stock_qty>=0)) ENGINE=InnoDB;
+CREATE TABLE orders(order_id BIGINT PRIMARY KEY AUTO_INCREMENT,customer_name VARCHAR(120) NOT NULL,order_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,status VARCHAR(20) NOT NULL DEFAULT 'PENDING') ENGINE=InnoDB;
+CREATE TABLE order_lines(order_line_id BIGINT PRIMARY KEY AUTO_INCREMENT,order_id BIGINT NOT NULL,product_id INT NOT NULL,quantity INT NOT NULL,unit_price DECIMAL(10,2) NOT NULL,FOREIGN KEY(order_id) REFERENCES orders(order_id),FOREIGN KEY(product_id) REFERENCES products(product_id),CHECK(quantity>0)) ENGINE=InnoDB;
+CREATE TABLE order_followups(followup_id BIGINT PRIMARY KEY AUTO_INCREMENT,order_id BIGINT NOT NULL,created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,note VARCHAR(255) NOT NULL,FOREIGN KEY(order_id) REFERENCES orders(order_id)) ENGINE=InnoDB;
+INSERT INTO products(product_name,selling_price,cost_price,supplier_name,stock_qty) VALUES('Keyboard',1200,700,'Supplier A',20),('Mouse',500,250,'Supplier B',8),('Monitor',9500,7200,'Supplier C',3);
